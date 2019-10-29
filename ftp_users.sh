@@ -50,13 +50,19 @@ read -p "Make your choise: " menu
 #####CHANGE PASSWORD####
 	elif [ $menu -eq 2 ];then 
 		echo "Changing password"
-		read -p 'Enter Username: ' user
-		if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" '/etc/passwd' >> /dev/null;then
-			pass=$(pwgen -y 16 | awk '{print $1}')
-			echo "$pass" | passwd --stdin $user
-			echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
+		read -p 'Are you really would like to change a password y/n? : ' change
+		if [[ $change == Y || $change == y ]];then
+			read -p 'Enter Username: ' user
+			if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" >> /dev/null;then
+				pass=$(pwgen -y 16 | awk '{print $1}')
+				echo "$pass" | passwd --stdin $user
+				echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
+			else
+				echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nUser $user does not exist\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+			fi
 		else
-			    echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nUser $user does not exist\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+			echo "Operation canceled"
+		continue
 		fi
 		#continue
 #######################
@@ -65,13 +71,12 @@ read -p "Make your choise: " menu
 	elif [ $menu -eq 3 ];then
 		echo "Deleting user"
 		read -p 'Enter Username: ' user
-		if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" '/etc/passwd' >> /dev/null;then
+		if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" >> /dev/null;then
 			read -p 'Would you like, to delete the home directory y/n (NO is default): ' path
 			read -p "Are you really would like to delete $user y/n: " del
 			while [ true ]
 			do
 				if [[ $del == Y || $del == y ]];then
-					echo "yes"
 					if [[ $path == Y || $path == y ]];then
 						userdel -r $user
 					else
@@ -80,7 +85,7 @@ read -p "Make your choise: " menu
 					echo -e "-------------------------\nUser $user was deleted\n------------------------"
 				break
 				elif [[ $del == N || $del == n ]];then
-				echo "no"
+				echo "Operation canceled"
 				break
 				else
 				read -p "Please enter y/n:" del
