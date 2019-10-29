@@ -1,6 +1,9 @@
 #!/bin/bash -e
 declare -a users
 re='^[0-9]+$'
+#for color outputs
+green=`tput setaf 2`
+reset=`tput sgr0`
 while [ true ]
 do
 echo -e "1 - Create user\n\
@@ -36,11 +39,11 @@ read -p "Make your choise: " menu
 				#echo "yes"#add quota code should be there
 				read -p 'Please enter number of gigabytes for userquota : ' quota
 				setquota $user $quota'G' $quota'G' 0 0 /var/ftp
-				echo -e "-----------------------------------\nYour password is:$pass \n-----------------------------------"
+				echo -e "-----------------------------------\n \nYour password is:${green} $pass ${reset} \n \n-----------------------------------"
 				#echo "$(repquota -a | grep $user)"
 			else
 				echo "Warning!!! There is no quota as a default"
-				echo -e "-----------------------------------\nYour password is:$pass \n-----------------------------------"
+				echo -e "-----------------------------------\n \nYour password is:${green} $pass ${reset} \n \n-----------------------------------"
 			fi
 		else
 			echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nUsername can not be empty\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
@@ -56,7 +59,7 @@ read -p "Make your choise: " menu
 			if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" >> /dev/null;then
 				pass=$(pwgen -y 16 | awk '{print $1}')
 				echo "$pass" | passwd --stdin $user
-				echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
+				echo -e "-----------------------------------\n \nYour password is:${green} $pass ${reset}\n \n-----------------------------------"
 			else
 				echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nUser $user does not exist\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 			fi
