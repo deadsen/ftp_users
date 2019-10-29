@@ -1,32 +1,43 @@
 #!/bin/bash -e
 declare -a users
+re='^[0-9]+$'
 while [ true ]
 do
 echo -e "1 - Create user\n\
 2 - Change password \n\
 3 - Delete user \n\
 4 - Show users \n\
-0 - EXIT"
+5 - Edit disk quotas\n\
+0 - Exit"
 #trap "echo ' Test'" EXIT
 read -p "Make your choise: " menu
+#########CHECK INPUT VALUES#########
+	if ! [[ $menu =~ $re ]];then
+		echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nerror: You can only enter number values\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		continue
+######################
+#
 #########EXIT##########
-	if [ $menu -eq 0 ];then
+	elif [ $menu -eq 0 ];then
 		echo 'Bye'
 		break
-#######################
+######################
 #
 #####CREATE USER#######
 	elif [ $menu -eq 1 ];then
 		echo "Create user"
 		read -p 'Username: ' user
 		pass=$(pwgen -y 16 | awk '{print $1}')
-		useradd -d /home/$user -s /sbin/nologin $user
+		useradd -d /mnt/VHD/$user -s /sbin/nologin $user
 		echo "$pass" | passwd --stdin $user
 		echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
 ##########ADD QUOTA#####
 		read -p "Whoud you like to add a user disk quota?(As a default there is no quota) y/n:" quota
 		if [[ $quota == Y || $quota == y ]];then
-			echo "yes"
+			echo "yes"#add quota code should be there
+			edquota $user
+		else
+			echo "Warning!!! There is no quota as a default"
 		fi
 ########################
 #
@@ -78,7 +89,6 @@ read -p "Make your choise: " menu
 #####LIST USERS#######
 	elif [ $menu -eq 4 ];then
 		echo -e "-------------------------\nList of users\n-------------------------"
-		#read -p 'Enter Username: ' user
 		n_row=$(ls /home | wc -l)
 		for (( i=1; i<=n_row; i++ ))
 		do
@@ -86,16 +96,33 @@ read -p "Make your choise: " menu
 			if grep -E "^${users[$i]}" '/etc/passwd' >> /dev/null;then
 				echo "${users[$i]}" 
 			fi
-			#ls /home | awk "NR==$i {print}" > /tmp/users
-			#echo "${users[$i]}"
 		done
 		echo "-------------------------"
-		#$user
-		#continue
 #####################
+######SHOW AND EDIT QUOTAS####
+	elif [ $menu -eq 5 ];then
+		#echo -e "1 - Show quotas\n2 - Edit quota\n0 - Exit"
+		#read -p 'Make your choise : ' check
+		while [ true ]
+		do
+			echo -e "1 - Show quotas\n2 - Edit quota\n0 - Exit"
+			read -p 'Make your choise : ' check
+			if ! [[ $menu =~ $re ]];then
+			echo -e "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nerror: You can only enter number values\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+			continue
+			elif [ $check -eq 1 ];then
+				repquota -a
+			elif [ $check -eq 2 ];then
+				read -p 'Username : ' quotuser
+				edquota $quotuser
+			elif [ $check -eq 0 ];then
+			break
+			else
+				read -p 'Wrong number, try again : ' check
+			fi
+		done
+####################
 	else
 		echo "Wrong number, try again"
 	fi
 done
-echo "$?"
-echo 'END'
