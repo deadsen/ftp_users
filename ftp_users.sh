@@ -97,10 +97,10 @@ read -p "Make your choise: " menu
 #####LIST USERS#######
 	elif [ $menu -eq 4 ];then
 		echo -e "-------------------------\nList of users\n-------------------------"
-		n_row=$(ls /home | wc -l)
+		n_row=$(ls /var/ftp | wc -l)
 		for (( i=1; i<=n_row; i++ ))
 		do
-			users[$i]=$( ls /home | awk "NR==$i {print}")
+			users[$i]=$( ls /var/ftp | awk "NR==$i {print}")
 			if grep -E "^${users[$i]}" '/etc/passwd' >> /dev/null;then
 				echo "${users[$i]}" 
 			fi
