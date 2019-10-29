@@ -29,7 +29,7 @@ read -p "Make your choise: " menu
 		read -p 'Username: ' user
 		if ! [ -z $user ];then
 			pass=$(pwgen -y 16 | awk '{print $1}')
-			useradd -d /mnt/VHD/$user -s /sbin/nologin $user
+			useradd -d /var/ftp/$user -s /sbin/nologin $user
 			echo "$pass" | passwd --stdin $user
 			#echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
 ##########ADD QUOTA#####
@@ -37,7 +37,7 @@ read -p "Make your choise: " menu
 			if [[ $varquota == Y || $varquota == y ]];then
 				#echo "yes"#add quota code should be there
 				read -p 'Please enter number of gigabytes for userquota : ' quota
-				setquota $user $quota'G' $quota'G' 0 0 /mnt/VHD
+				setquota $user $quota'G' $quota'G' 0 0 /var/ftp
 				echo -e "-----------------------------------\nYour password is:$pass\n-----------------------------------"
 				#echo "$(repquota -a | grep $user)"
 			else
@@ -122,7 +122,7 @@ read -p "Make your choise: " menu
 				read -p 'Username : ' user
 				read -p 'Please enter number gigabytes for userquota (Numbers only) : ' quota
 				if [[ $quota =~ $re ]];then
-					setquota $user $quota'G' $quota'G' 0 0 /mnt/VHD
+					setquota $user $quota'G' $quota'G' 0 0 /var/ftp
 					echo -e '-----------------------------------\nQuota successfully updated\n-----------------------------------'
 					echo '----------------------------------------------------------------------'
 					repquota -a | grep $user
