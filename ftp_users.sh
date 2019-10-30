@@ -29,8 +29,8 @@ read -p "Make your choise: " menu
 	elif [ $menu -eq 1 ];then
 		echo "Create user"
 		read -p 'Username: ' user
-		if ! [ -z $user ];then
-			pass=$(pwgen -y 16 | awk '{print $1}')
+		if [ -n "$user" ];then
+			pass=$(pwgen -y 16 1)
 			useradd -d /var/ftp/$user -s /sbin/nologin $user
 			echo "$pass" | passwd --stdin $user
 ##########ADD QUOTA#####
@@ -57,7 +57,7 @@ read -p "Make your choise: " menu
 		if [[ $change == Y || $change == y ]];then
 			read -p 'Enter Username: ' user
 			if grep -w "$user" '/etc/passwd' | grep -w "/var/ftp" >> /dev/null;then
-				pass=$(pwgen -y 16 | awk '{print $1}')
+				pass=$(pwgen -y 16 1)
 				echo "$pass" | passwd --stdin $user
 				echo -e "-----------------------------------\n \nYour password is:${green} $pass ${reset}\n \n-----------------------------------"
 			else
